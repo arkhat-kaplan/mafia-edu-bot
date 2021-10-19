@@ -158,6 +158,8 @@ def callback_worker(call):
         bot.register_next_step_handler(msg, drop_game)
     if call.text == "Афиша ближайших игр":
         show_games(call)
+    else:
+        bot.send_message(call.chat.id, 'Мая тибя ни панимать!')
 
 
 bot.polling(none_stop=True, interval=0)
