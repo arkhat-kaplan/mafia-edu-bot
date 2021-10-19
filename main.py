@@ -60,11 +60,11 @@ def add_gamedate(msg):
             cursor = con.cursor()
             cursor.execute('''
                             UPDATE games 
-                            SET "date" = substr(?,1,2)||substr(?,3,4)||substr(?,7) 
-                            WHERE "inserted_by"  = ?
+                            SET "date" = substr({msg.text},1,4)||substr({msg.text},6,2)||substr({msg.text},9,2) 
+                            WHERE "inserted_by"  = {msg.from_user.id}
                                 and "date" is null
-                            ''',
-                           (msg.text, msg.from_user.id))
+                            '''
+                           .format((msg.text, msg.from_user.id)))
             con.commit()
         bot.send_message(msg.chat.id, 'Запомню :-)')
         send_keyboard(msg, "Чем еще могу помочь?")
