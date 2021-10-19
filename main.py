@@ -114,7 +114,9 @@ def add_game(msg):
 def get_games_string(games):
     games_str = []
     for val in list(enumerate(games)):
-        games_str.append(str(val[0] + 1) + ') __' + val[1][0] + '__ - **' + val[2] + '**\n')
+        y = str(val[1][1])
+        y = y[:4] + '-' + y[4:6] + '-' + y[6:]
+        games_str.append(str(val[0] + 1) + ') __' + val[1][0] + '__ - **' + y + '**\n')
     return ''.join(games_str)
 
 
@@ -123,9 +125,10 @@ def show_games(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
         cursor.execute('SELECT description, date FROM games WHERE date >= julianday(\'now\') LIMIT 3')
-        tasks = get_games_string(cursor.fetchall())
-        bot.send_message(msg.chat.id, tasks)
+        games = get_games_string(cursor.fetchall())
+        bot.send_message(msg.chat.id, games)
         send_keyboard(msg, "Чем еще могу помочь?")
+        return games
 
 
 # Показать ближайшую игру - Конец
@@ -157,4 +160,7 @@ def callback_worker(call):
         show_games(call)
 
 
-bot.polling(none_stop=True, interval=0)
+cursor.execute('SELECT description, date FROM games WHERE date >= julianday(\'now\') LIMIT 3')
+games = cursor.fetchall()
+print(games)
+#bot.polling(none_stop=True, interval=0)
