@@ -5,7 +5,8 @@ import datetime
 
 bot = telebot.TeleBot("1999230190:AAGqimG9_RXg1_3WwX_-N5sbSJkpyp9z4Wk")
 
-date_list = [(datetime.date.today() + datetime.timedelta(days=x)).strftime('%Y-%m-%d') for x in range(0, 5)]
+date_list = list([(datetime.date.today() + datetime.timedelta(days=x)).strftime('%Y-%m-%d') for x in range(0, 5)])
+
 
 # Клавиатуры
 @bot.message_handler(commands=['start'])
@@ -22,6 +23,7 @@ def send_keyboard(message, text="Привет, чем я могу тебе по�
     msg = bot.send_message(message.from_user.id,
                            text=text, reply_markup=keyboard)
     bot.register_next_step_handler(msg, callback_worker)
+
 
 @bot.message_handler(commands=['new'])
 def send_keyboard_add_gamedate(message, text="Привет, чем я могу тебе помочь?"):
@@ -88,9 +90,11 @@ def add_game(msg):
         cursor.execute('INSERT INTO games (description, inserted_by, date) VALUES (?, ?, null)',
                        (msg.text, msg.from_user.id))
         con.commit()
-    msg = bot.send_message(msg.from_user.id,
-                           text="Выбери день из списка",
-                           reply_markup=date_list)
+    markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+    markup.add(date_list)
+    msg = bot.reply_to(msg.from_user.id,
+                       text="Выбери день из списка",
+                       reply_markup=markup)
     bot.register_next_step_handler(msg, add_gamedate)
 
 
@@ -102,8 +106,9 @@ def add_game(msg):
 def get_games_string(games):
     games_str = []
     for val in list(enumerate(games)):
-        games_str.append(str(val[0] + 1) + ') __' + val[1][0] + '__ - **' + val[2] +'**\n')
+        games_str.append(str(val[0] + 1) + ') __' + val[1][0] + '__ - **' + val[2] + '**\n')
     return ''.join(games_str)
+
 
 # отправляем пользователю его планы
 def show_games(msg):
@@ -113,6 +118,7 @@ def show_games(msg):
         tasks = get_games_string(cursor.fetchall())
         bot.send_message(msg.chat.id, tasks)
         send_keyboard(msg, "Чем еще могу помочь?")
+
 
 # Показать ближайшую игру - Конец
 
@@ -128,5 +134,6 @@ def callback_worker(call):
     if call.text == "Удалить ошибочную запись об игре":
         msg = bot.send_message(call.chat.id, 'Ты уверен?')
         bot.register_next_step_handler(msg, drop_game)
+
 
 bot.polling(none_stop=True, interval=0)
