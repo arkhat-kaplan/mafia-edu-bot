@@ -1,10 +1,11 @@
 import telebot
 from telebot import types
 import sqlite3
-import time
+import datetime
 
 bot = telebot.TeleBot("1999230190:AAGqimG9_RXg1_3WwX_-N5sbSJkpyp9z4Wk")
 
+date_list = [(datetime.date.today() + datetime.timedelta(days=x)).strftime('%Y-%m-%d') for x in range(0, 5)]
 
 # Клавиатуры
 @bot.message_handler(commands=['start'])
@@ -87,7 +88,9 @@ def add_game(msg):
         cursor.execute('INSERT INTO games (description, inserted_by, date) VALUES (?, ?, null)',
                        (msg.text, msg.from_user.id))
         con.commit()
-    msg = bot.send_message(msg.from_user.id, text="Напиши дату игры")
+    msg = bot.send_message(msg.from_user.id,
+                           text="Выбери день из списка",
+                           reply_markup=date_list)
     bot.register_next_step_handler(msg, add_gamedate)
 
 
