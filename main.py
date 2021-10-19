@@ -153,9 +153,8 @@ def callback_worker(call):
     if call.text == "Удалить ошибочную запись об игре":
         msg = bot.send_message(call.chat.id, 'Ты уверен?')
         bot.register_next_step_handler(msg, drop_game)
-    if call.text == "Тест":
-        msg = bot.send_message(call.chat.id, 'Ты уверен?')
-        bot.register_next_step_handler(msg, test)
+    if call.text == "Афиша ближайших игр":
+        bot.register_next_step_handler(1, show_games)
 
 
 bot.polling(none_stop=True, interval=0)
