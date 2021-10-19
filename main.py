@@ -30,7 +30,9 @@ def send_keyboard_add_gamedate(message, text="Привет, чем я могу �
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
     itembtn1 = types.KeyboardButton('Добавить новую игру в расписание')
     itembtn2 = types.KeyboardButton('Удалить ошибочную запись об игре')
+    itembtn2 = types.KeyboardButton('Тест')
     keyboard.add(itembtn1, itembtn2)
+    keyboard.add(itembtn3)
     msg = bot.send_message(message.from_user.id,
                            text=text, reply_markup=keyboard)
     bot.register_next_step_handler(msg, callback_worker)
@@ -128,6 +130,17 @@ def show_games(msg):
 
 # Показать ближайшую игру - Конец
 
+# Тест - начало
+def test(msg):
+    if msg == 'Да':
+        with sqlite3.connect('mafiaclub_hse.db') as con:
+            cursor = con.cursor()
+            cursor.execute("""SELECT name FROM sqlite_master WHERE type = 'table'""")
+            bot.send_message(msg.chat.id, cursor.fetchall())
+    else:
+        pass
+# Тест - конец
+
 # Все соединяем - Начало
 
 def callback_worker(call):
@@ -140,6 +153,9 @@ def callback_worker(call):
     if call.text == "Удалить ошибочную запись об игре":
         msg = bot.send_message(call.chat.id, 'Ты уверен?')
         bot.register_next_step_handler(msg, drop_game)
+    if call.text == "Тест":
+        msg = bot.send_message(call.chat.id, 'Ты уверен?')
+        bot.register_next_step_handler(msg, test)
 
 
 bot.polling(none_stop=True, interval=0)
