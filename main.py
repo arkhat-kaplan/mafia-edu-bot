@@ -60,7 +60,7 @@ def add_gamedate(msg):
             cursor = con.cursor()
             cursor.execute('''
                             UPDATE games 
-                            SET "date" = substr(?,7)||substr(?,4,2)||substr(?,1,2) 
+                            SET "date" = substr(?,1,2)||substr(?,3,4)||substr(?,7) 
                             WHERE "inserted_by"  = ?
                                 and "date" is null
                             ''',
