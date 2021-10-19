@@ -98,7 +98,7 @@ def add_game(msg):
             con.commit()
         markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
         for value in date_list:
-            markup.add(types.KeyboardButton(value[0]))
+            markup.add(types.KeyboardButton(value))
         msg = bot.reply_to(msg.from_user.id,
                            text="Выбери день из списка",
                            reply_markup=markup)
@@ -125,7 +125,7 @@ def get_games_string(games):
 def show_games(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
-        cursor.execute('SELECT description, date FROM games WHERE date >= julianday(\'now\') LIMIT 3')
+        cursor.execute('SELECT description, date FROM games WHERE date >= strftime(\'%Y%m%d\',\'now\') LIMIT 3')
         games = get_games_string(cursor.fetchall())
         bot.send_message(msg.chat.id, games, parse_mode='HTML')
         send_keyboard(msg, "Чем еще могу помочь?")
