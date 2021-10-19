@@ -160,7 +160,4 @@ def callback_worker(call):
         show_games(call)
 
 
-cursor.execute('SELECT description, date FROM games WHERE date >= julianday(\'now\') LIMIT 3')
-games = cursor.fetchall()
-print(games)
-#bot.polling(none_stop=True, interval=0)
+bot.polling(none_stop=True, interval=0)
