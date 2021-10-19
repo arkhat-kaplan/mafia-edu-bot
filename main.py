@@ -142,7 +142,7 @@ def test(msg):
 # Тест - конец
 
 # Все соединяем - Начало
-
+@bot.message_handler(content_types=['text'])
 def callback_worker(call):
     if call.text == "Добавить новую игру в расписание":
         msg = bot.send_message(call.chat.id, 'Давайте добавим игру! Напишите ее описание в чат!')
@@ -155,11 +155,6 @@ def callback_worker(call):
         bot.register_next_step_handler(msg, drop_game)
     if call.text == "Афиша ближайших игр":
         show_games(call)
-
-
-@bot.message_handler(content_types=['text'])
-def handle_docs_audio(message):
-    send_keyboard(message, text="Я не понимаю :-( Выберите один из пунктов меню:")
 
 
 bot.polling(none_stop=True, interval=0)
