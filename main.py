@@ -18,18 +18,18 @@ def send_keyboard(message, text="Привет, чем я могу тебе по�
     itembtn6 = types.KeyboardButton('Нет, спасибо!')
     keyboard.add(itembtn1, itembtn2)
     keyboard.add(itembtn3, itembtn4, itembtn5, itembtn6)
-
+    msg = bot.send_message(message.from_user.id,
+                           text=text, reply_markup=keyboard)
+    bot.register_next_step_handler(msg, callback_worker)
 
 @bot.message_handler(commands=['newgame'])
 def send_keyboard_add_gamedate(message, text="Привет, чем я могу тебе помочь?"):
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
-    itembtn1 = types.KeyboardButton('Добавить дату')
-    itembtn2 = types.KeyboardButton('Отменить')
+    itembtn1 = types.KeyboardButton('Добавить дату новой игры в расписание')
+    itembtn2 = types.KeyboardButton('Удалить ошибочную запись об игре')
     keyboard.add(itembtn1, itembtn2)
-
     msg = bot.send_message(message.from_user.id,
                            text=text, reply_markup=keyboard)
-
     bot.register_next_step_handler(msg, callback_worker)
 
 
