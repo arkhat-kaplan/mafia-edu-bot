@@ -85,17 +85,20 @@ def drop_game(msg):
 
 
 def add_game(msg):
-    with sqlite3.connect('mafiaclub_hse.db') as con:
-        cursor = con.cursor()
-        cursor.execute('INSERT INTO games (description, inserted_by, date) VALUES (?, ?, null)',
-                       (msg.text, msg.from_user.id))
-        con.commit()
-    markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
-    markup.add(date_list)
-    msg = bot.reply_to(msg.from_user.id,
-                       text="Выбери день из списка",
-                       reply_markup=markup)
-    bot.register_next_step_handler(msg, add_gamedate)
+    try:
+        with sqlite3.connect('mafiaclub_hse.db') as con:
+            cursor = con.cursor()
+            cursor.execute('INSERT INTO games (description, inserted_by, date) VALUES (?, ?, null)',
+                           (msg.text, msg.from_user.id))
+            con.commit()
+        markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+        markup.add(date_list)
+        msg = bot.reply_to(msg.from_user.id,
+                           text="Выбери день из списка",
+                           reply_markup=markup)
+        bot.register_next_step_handler(msg, add_gamedate)
+    except:
+        bot.send_message(msg.chat.id, 'Сломалося(')
 
 
 # Как добавить игру в расписание? - Конец
