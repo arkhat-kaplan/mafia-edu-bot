@@ -88,8 +88,8 @@ def add_game(msg):
     try:
         with sqlite3.connect('mafiaclub_hse.db') as con:
             cursor = con.cursor()
-            cursor.execute('INSERT INTO games (inserted_by, description) VALUES (?, ?)',
-                           (msg.text, msg.from_user.id))
+            cursor.execute('INSERT INTO games (inserted_by, description) VALUES ({msg.from_user.id}), {msg.text}'
+                           .format(msg.text, msg.from_user.id))
             con.commit()
         markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
         markup.add(date_list)
