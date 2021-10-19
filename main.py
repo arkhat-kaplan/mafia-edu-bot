@@ -92,9 +92,9 @@ def add_game(msg):
             cursor = con.cursor()
             cursor.execute('''
                             INSERT INTO "games" (inserted_by, description) 
-                            VALUES (%s, %s)
-                            '''
-                           .format(msg.from_user.id, msg.text))
+                            VALUES (?, ?)
+                            ''',
+                           (msg.from_user.id, msg.text))
             con.commit()
         markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
         markup.add(date_list)
@@ -108,7 +108,7 @@ def add_game(msg):
 
 # Как добавить игру в расписание? - Конец
 
-# Показать ближайшую игру - Начало
+# Показать ближайшую игру - Начало - работает, аллилуя!
 
 # просто функция, которая делает нам красивые строки для отправки пользователю
 def get_games_string(games):
@@ -120,7 +120,7 @@ def get_games_string(games):
     return ''.join(games_str)
 
 
-# отправляем пользователю его планы
+# отправляем пользователю игрули
 def show_games(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
@@ -158,8 +158,6 @@ def callback_worker(call):
         bot.register_next_step_handler(msg, drop_game)
     if call.text == "Афиша ближайших игр":
         show_games(call)
-    else:
-        bot.send_message(call.chat.id, 'Мая тибя ни панимать!')
 
 
 bot.polling(none_stop=True, interval=0)
