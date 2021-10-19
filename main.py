@@ -20,7 +20,7 @@ def send_keyboard(message, text="Привет, чем я могу тебе по�
     keyboard.add(itembtn3, itembtn4, itembtn5, itembtn6)
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['newgame'])
 def send_keyboard_add_gamedate(message, text="Привет, чем я могу тебе помочь?"):
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
     itembtn1 = types.KeyboardButton('Добавить дату')
@@ -73,17 +73,20 @@ def add_gamedate(msg):
 
 
 def drop_game(msg):
-    with sqlite3.connect('planner_hse.db') as con:
-        cursor = con.cursor()
-        cursor.execute('''
-                        DELETE FROM games
-                        WHERE "inserted_by"  = ?
-                            and "date" is null
-                        ''',
-                       (msg.from_user.id, msg.text))
-        con.commit()
-    bot.send_message(msg.chat.id, 'Хорошо')
-    send_keyboard(msg, "Чем еще могу помочь?")
+    if msg == 'Да':
+        with sqlite3.connect('planner_hse.db') as con:
+            cursor = con.cursor()
+            cursor.execute('''
+                            DELETE FROM games
+                            WHERE "inserted_by"  = ?
+                                and "date" is null
+                            ''',
+                           (msg.from_user.id, msg.text))
+            con.commit()
+        bot.send_message(msg.chat.id, 'Хорошо')
+        send_keyboard(msg, "Чем еще могу помочь?")
+    else:
+        bot.send_message(msg.chat.id, 'Ладно:С')
 
 
 # Как добавить игру в расписание? - Конец
@@ -106,6 +109,19 @@ def show_games(msg):
         bot.send_message(msg.chat.id, tasks)
         send_keyboard(msg, "Чем еще могу помочь?")
 
-# Показать ближайшую игру - Начало
+# Показать ближайшую игру - Конец
+
+# Все соединяем - Начало
+
+def callback_worker(call):
+    if call.text == "Добавить новую игру в расписание":
+        msg = bot.send_message(call.chat.id, 'Давайте добавим игру! Напишите ее описание в чат!')
+        bot.register_next_step_handler(msg, add_game)
+    if call.text == "Добавить дату новой игры в расписание":
+        msg = bot.send_message(call.chat.id, 'Напиши в чат дату формата ГГГГ-ММ-ДД')
+        bot.register_next_step_handler(msg, add_gamedate)
+    if call.text == "Удалить ошибочную запись об игре":
+        msg = bot.send_message(call.chat.id, 'Ты уверен?')
+        bot.register_next_step_handler(msg, drop_game)
 
 bot.polling(none_stop=True, interval=0)
