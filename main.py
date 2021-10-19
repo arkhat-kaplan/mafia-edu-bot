@@ -154,7 +154,12 @@ def callback_worker(call):
         msg = bot.send_message(call.chat.id, 'Ты уверен?')
         bot.register_next_step_handler(msg, drop_game)
     if call.text == "Афиша ближайших игр":
-        bot.register_next_step_handler(1, show_games)
+        show_games(call)
+
+
+@bot.message_handler(content_types=['text'])
+def handle_docs_audio(message):
+    send_keyboard(message, text="Я не понимаю :-( Выберите один из пунктов меню:")
 
 
 bot.polling(none_stop=True, interval=0)
