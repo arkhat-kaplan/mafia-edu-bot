@@ -91,7 +91,7 @@ def add_game(msg):
         with sqlite3.connect('mafiaclub_hse.db') as con:
             cursor = con.cursor()
             cursor.execute('''
-                            INSERT INTO "games" (inserted_by, description) 
+                            INSERT INTO games (inserted_by, description) 
                             VALUES (?, ?)
                             ''',
                            (msg.from_user.id, msg.text))
@@ -99,7 +99,7 @@ def add_game(msg):
         markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
         for value in date_list:
             markup.add(types.KeyboardButton(value))
-        msg = bot.reply_to(msg.from_user.id,
+        msg = bot.send_message(msg.from_user.id,
                            text="Выбери день из списка",
                            reply_markup=markup)
         bot.register_next_step_handler(msg, add_gamedate)
