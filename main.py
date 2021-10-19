@@ -51,7 +51,8 @@ def add_game(msg):
         cursor.execute('INSERT INTO games (description, inserted_by, date) VALUES (?, ?, null)',
                        (msg.text, msg.from_user.id))
         con.commit()
-    send_keyboard_add_gamedate(msg, "Необходимо внести дату игры в расписание")
+    msg = bot.send_message(msg.from_user.id, text="Напиши дату игры")
+    bot.register_next_step_handler(msg, add_gamedate)
 
 
 def add_gamedate(msg):
