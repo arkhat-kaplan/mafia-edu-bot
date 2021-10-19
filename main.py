@@ -48,7 +48,7 @@ except:
 # Как добавить игру в расписание? - начало
 def add_gamedate(msg):
     try:
-        with sqlite3.connect('planner_hse.db') as con:
+        with sqlite3.connect('mafiaclub_hse.db') as con:
             cursor = con.cursor()
             cursor.execute('''
                             UPDATE games 
@@ -67,7 +67,7 @@ def add_gamedate(msg):
 
 def drop_game(msg):
     if msg == 'Да':
-        with sqlite3.connect('planner_hse.db') as con:
+        with sqlite3.connect('mafiaclub_hse.db') as con:
             cursor = con.cursor()
             cursor.execute('''
                             DELETE FROM games
@@ -83,7 +83,7 @@ def drop_game(msg):
 
 
 def add_game(msg):
-    with sqlite3.connect('planner_hse.db') as con:
+    with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
         cursor.execute('INSERT INTO games (description, inserted_by, date) VALUES (?, ?, null)',
                        (msg.text, msg.from_user.id))
@@ -107,7 +107,7 @@ def get_games_string(games):
 
 # отправляем пользователю его планы
 def show_games(msg):
-    with sqlite3.connect('planner_hse.db') as con:
+    with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
         cursor.execute('SELECT description, date FROM games WHERE date >= julianday(now()) LIMIT 3')
         tasks = get_games_string(cursor.fetchall())
