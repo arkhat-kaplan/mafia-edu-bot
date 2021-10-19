@@ -6,7 +6,7 @@ import time
 bot = telebot.TeleBot("1999230190:AAGqimG9_RXg1_3WwX_-N5sbSJkpyp9z4Wk")
 
 
-# напишем, что делать нашему боту при команде старт
+# Клавиатуры
 @bot.message_handler(commands=['start'])
 def send_keyboard(message, text="Привет, чем я могу тебе помочь?"):
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
@@ -22,7 +22,7 @@ def send_keyboard(message, text="Привет, чем я могу тебе по�
                            text=text, reply_markup=keyboard)
     bot.register_next_step_handler(msg, callback_worker)
 
-@bot.message_handler(commands=['newgame'])
+
 def send_keyboard_add_gamedate(message, text="Привет, чем я могу тебе помочь?"):
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
     itembtn1 = types.KeyboardButton('Добавить дату новой игры в расписание')
@@ -60,7 +60,7 @@ def add_gamedate(msg):
             cursor = con.cursor()
             cursor.execute('''
                             UPDATE games 
-                            SET "date" = julianday(?)
+                            SET "date" = substr(?,7)||substr(?,4,2)||substr(?,1,2) 
                             WHERE "inserted_by"  = ?
                                 and "date" is null
                             ''',
