@@ -116,7 +116,7 @@ def get_games_string(games):
     for val in list(enumerate(games)):
         y = str(val[1][1])
         y = y[:4] + '-' + y[4:6] + '-' + y[6:]
-        games_str.append(str(val[0] + 1) + ') __' + val[1][0] + '__ - **' + y + '**\n')
+        games_str.append(str(val[0] + 1) + ') [i]' + val[1][0] + '[/i] - [b]' + y + '[/b]\n')
     return ''.join(games_str)
 
 
@@ -127,7 +127,7 @@ def show_games(msg):
         cursor.execute('SELECT description, date FROM games WHERE date >= julianday(\'now\') LIMIT 3')
         games = get_games_string(cursor.fetchall())
         bot.send_message(msg.chat.id, games)
-        send_keyboard(msg, "Чем еще могу помочь?")
+        send_keyboard(msg, "Чем еще могу помочь?", parse_mode='HTML')
         return games
 
 
