@@ -45,16 +45,6 @@ except:
 
 
 # Как добавить игру в расписание? - начало
-def add_game(msg):
-    with sqlite3.connect('planner_hse.db') as con:
-        cursor = con.cursor()
-        cursor.execute('INSERT INTO games (description, inserted_by, date) VALUES (?, ?, null)',
-                       (msg.text, msg.from_user.id))
-        con.commit()
-    msg = bot.send_message(msg.from_user.id, text="Напиши дату игры")
-    bot.register_next_step_handler(msg.msg, add_gamedate)
-
-
 def add_gamedate(msg):
     try:
         with sqlite3.connect('planner_hse.db') as con:
@@ -71,6 +61,7 @@ def add_gamedate(msg):
         send_keyboard(msg, "Чем еще могу помочь?")
     except:
         bot.send_message(msg.chat.id, 'Необходимо ввести формат даты ГГГГ-ММ-ДД.')
+        bot.register_next_step_handler(msg, add_gamedate)
 
 
 def drop_game(msg):
@@ -88,6 +79,16 @@ def drop_game(msg):
         send_keyboard(msg, "Чем еще могу помочь?")
     else:
         bot.send_message(msg.chat.id, 'Ладно:С')
+
+
+def add_game(msg):
+    with sqlite3.connect('planner_hse.db') as con:
+        cursor = con.cursor()
+        cursor.execute('INSERT INTO games (description, inserted_by, date) VALUES (?, ?, null)',
+                       (msg.text, msg.from_user.id))
+        con.commit()
+    msg = bot.send_message(msg.from_user.id, text="Напиши дату игры")
+    bot.register_next_step_handler(msg, add_gamedate)
 
 
 # Как добавить игру в расписание? - Конец
