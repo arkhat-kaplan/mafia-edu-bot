@@ -5,7 +5,7 @@ import datetime
 
 bot = telebot.TeleBot("1999230190:AAGqimG9_RXg1_3WwX_-N5sbSJkpyp9z4Wk")
 
-date_list = list([(datetime.date.today() + datetime.timedelta(days=x)).strftime('%Y-%m-%d') for x in range(0, 5)])
+date_list = list((datetime.date.today() + datetime.timedelta(days=x)).strftime('%Y-%m-%d') for x in range(0, 5))
 
 
 # Клавиатуры
@@ -97,7 +97,8 @@ def add_game(msg):
                            (msg.from_user.id, msg.text))
             con.commit()
         markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
-        markup.add(date_list)
+        for value in date_list:
+            markup.add(types.KeyboardButton(value[0]))
         msg = bot.reply_to(msg.from_user.id,
                            text="Выбери день из списка",
                            reply_markup=markup)
