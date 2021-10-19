@@ -30,7 +30,7 @@ def send_keyboard_add_gamedate(message, text="Привет, чем я могу �
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
     itembtn1 = types.KeyboardButton('Добавить новую игру в расписание')
     itembtn2 = types.KeyboardButton('Удалить ошибочную запись об игре')
-    itembtn2 = types.KeyboardButton('Тест')
+    itembtn3 = types.KeyboardButton('Тест')
     keyboard.add(itembtn1, itembtn2)
     keyboard.add(itembtn3)
     msg = bot.send_message(message.from_user.id,
