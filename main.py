@@ -126,8 +126,8 @@ def show_games(msg):
         cursor = con.cursor()
         cursor.execute('SELECT description, date FROM games WHERE date >= julianday(\'now\') LIMIT 3')
         games = get_games_string(cursor.fetchall())
-        bot.send_message(msg.chat.id, games)
-        send_keyboard(msg, "Чем еще могу помочь?", parse_mode='Markdown')
+        bot.send_message(msg.chat.id, games, parse_mode='Markdown')
+        send_keyboard(msg, "Чем еще могу помочь?")
         return games
 
 
