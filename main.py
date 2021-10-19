@@ -22,7 +22,7 @@ def send_keyboard(message, text="Привет, чем я могу тебе по�
                            text=text, reply_markup=keyboard)
     bot.register_next_step_handler(msg, callback_worker)
 
-
+@bot.message_handler(commands=['new'])
 def send_keyboard_add_gamedate(message, text="Привет, чем я могу тебе помочь?"):
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
     itembtn1 = types.KeyboardButton('Добавить дату новой игры в расписание')
