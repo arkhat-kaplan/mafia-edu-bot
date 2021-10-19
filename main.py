@@ -122,7 +122,7 @@ def get_games_string(games):
 def show_games(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
-        cursor.execute('SELECT description, date FROM games WHERE date >= julianday(now()) LIMIT 3')
+        cursor.execute('SELECT description, date FROM games WHERE date >= julianday(\'now\') LIMIT 3')
         tasks = get_games_string(cursor.fetchall())
         bot.send_message(msg.chat.id, tasks)
         send_keyboard(msg, "Чем еще могу помочь?")
