@@ -30,9 +30,7 @@ def send_keyboard_add_gamedate(message, text="Привет, чем я могу �
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
     itembtn1 = types.KeyboardButton('Добавить новую игру в расписание')
     itembtn2 = types.KeyboardButton('Удалить ошибочную запись об игре')
-    itembtn3 = types.KeyboardButton('Тест')
     keyboard.add(itembtn1, itembtn2)
-    keyboard.add(itembtn3)
     msg = bot.send_message(message.from_user.id,
                            text=text, reply_markup=keyboard)
     bot.register_next_step_handler(msg, callback_worker)
@@ -41,15 +39,17 @@ def send_keyboard_add_gamedate(message, text="Привет, чем я могу �
 conn = sqlite3.connect('mafiaclub_hse.db')
 cursor = conn.cursor()
 
-# Таблица с играми
+# Таблицы
 try:
     query = "CREATE TABLE \"games\" (\"ID\" INTEGER UNIQUE, \"inserted_by\" INTEGER, \"description\" TEXT, \"date\" DATE, PRIMARY KEY (\"ID\"))"
+    cursor.execute(query)
+    query = "CREATE TABLE \"gamers\" (\"user_id\" INTEGER UNIQUE, \"nickname\" TEXT, \"name\" TEXT, \"img\" BLOP, \"resume\" BLOP, PRIMARY KEY (\"user_id\"))"
     cursor.execute(query)
 except:
     pass
 
 
-# Как добавить игру в расписание? - начало
+# Как добавить игру в расписание? - начало - работает, аллилуя!
 def add_gamedate(msg):
     try:
         with sqlite3.connect('mafiaclub_hse.db') as con:
@@ -109,6 +109,86 @@ def add_game(msg):
 
 # Как добавить игру в расписание? - Конец
 
+# Вывести информацию о боте - Начало - Проверить
+
+def get_info(msg):
+    msg = bot.send_message(msg.chat.id, 'Привет, я бот-помощник клуба по игре мафия. Ты можешь ознакомиться с тем что я умею с помощью команды /start, по секрету есть еще команда /new но она для администраторов.')
+    send_keyboard(msg, "Чем еще могу помочь?")
+
+# Вывести информацию о боте - Конец
+
+# Регистрация нового игрока - Начало - Проверить
+
+
+def registration_start(msg):
+    try:
+        with sqlite3.connect('mafiaclub_hse.db') as con:
+            cursor = con.cursor()
+            cursor.execute('''
+                            select user_id
+                            from gamers 
+                            where user_id = ?
+                            ''',
+                           (msg.from_user.id,))
+            x = cursor.fetchall()
+    except:
+        x = None
+    if x:
+        msg = bot.send_message(msg.chat.id, 'Напиши в чат свой ник.')
+        with sqlite3.connect('mafiaclub_hse.db') as con:
+            cursor = con.cursor()
+            cursor.execute('''
+                            insert into gamers (user_id, nickname)
+                            values(?, ?)
+                            ''',
+                           (msg.from_user.id, msg.text))
+        bot.register_next_step_handler(msg, registration_name)
+    else:
+        msg = bot.send_message(msg.chat.id, 'Ты уже зарегистрирован.')
+        send_keyboard(msg, "Чем еще могу помочь?")
+
+
+def registration_name(msg):
+    msg = bot.send_message(msg.chat.id, 'Напиши в чат своё имя.')
+    with sqlite3.connect('mafiaclub_hse.db') as con:
+        cursor = con.cursor()
+        cursor.execute('''
+                        update gamers 
+                        set name = ?
+                        where user_id = ?
+                        ''',
+                       (msg.text, msg.from_user.id))
+    bot.register_next_step_handler(msg, registration_img)
+
+
+def registration_img(msg):
+    msg = bot.send_message(msg.chat.id, 'Пришли свою фотографию в чат.')
+    with sqlite3.connect('mafiaclub_hse.db') as con:
+        cursor = con.cursor()
+        cursor.execute('''
+                        update gamers 
+                        set img = ?
+                        where user_id = ?
+                        ''',
+                       (msg.photo, msg.from_user.id))
+    bot.register_next_step_handler(msg, registration_img)
+
+def registration_resume(msg):
+    msg = bot.send_message(msg.chat.id, 'Пришли текстовый файл в чат.')
+    with sqlite3.connect('mafiaclub_hse.db') as con:
+        cursor = con.cursor()
+        cursor.execute('''
+                        update gamers 
+                        set resume = ?
+                        where user_id = ?
+                        ''',
+                       (msg.document, msg.from_user.id))
+    bot.send_message(msg.chat.id, 'Это был последний шаг, поздравляю с регистрацией <3.')
+    send_keyboard(msg, "Чем еще могу помочь?")
+
+
+# Регистрация нового игрока - Конец
+
 # Показать ближайшую игру - Начало - работает, аллилуя!
 
 # просто функция, которая делает нам красивые строки для отправки пользователю
@@ -129,21 +209,9 @@ def show_games(msg):
         games = get_games_string(cursor.fetchall())
         bot.send_message(msg.chat.id, games, parse_mode='HTML')
         send_keyboard(msg, "Чем еще могу помочь?")
-        return games
 
 
 # Показать ближайшую игру - Конец
-
-# Тест - начало
-def test(msg):
-    if msg == 'Да':
-        with sqlite3.connect('mafiaclub_hse.db') as con:
-            cursor = con.cursor()
-            cursor.execute("""SELECT name FROM sqlite_master WHERE type = 'table'""")
-            bot.send_message(msg.chat.id, cursor.fetchall())
-    else:
-        pass
-# Тест - конец
 
 # Все соединяем - Начало
 @bot.message_handler(content_types=['text'])
@@ -159,6 +227,11 @@ def callback_worker(call):
         bot.register_next_step_handler(msg, drop_game)
     if call.text == "Афиша ближайших игр":
         show_games(call)
+    if call.text == "Информация о боте":
+        get_info(call)
+    if call.text == 'Регистрация нового участника':
+        registration_name(call)
+
 
 
 bot.polling(none_stop=True, interval=0)
