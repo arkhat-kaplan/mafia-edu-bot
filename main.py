@@ -100,8 +100,8 @@ def add_game(msg):
         for value in date_list:
             markup.add(types.KeyboardButton(value))
         msg = bot.send_message(msg.from_user.id,
-                           text="Выбери день из списка",
-                           reply_markup=markup)
+                               text="Выбери день из списка",
+                               reply_markup=markup)
         bot.register_next_step_handler(msg, add_gamedate)
     except:
         bot.send_message(msg.chat.id, 'Сломалося(')
@@ -112,8 +112,10 @@ def add_game(msg):
 # Вывести информацию о боте - Начало - Проверить
 
 def get_info(msg):
-    msg = bot.send_message(msg.chat.id, 'Привет, я бот-помощник клуба по игре мафия. Ты можешь ознакомиться с тем что я умею с помощью команды /start, по секрету есть еще команда /new но она для администраторов.')
+    msg = bot.send_message(msg.chat.id,
+                           'Привет, я бот-помощник клуба по игре мафия. Ты можешь ознакомиться с тем что я умею с помощью команды /start, по секрету есть еще команда /new но она для администраторов.')
     send_keyboard(msg, "Чем еще могу помочь?")
+
 
 # Вывести информацию о боте - Конец
 
@@ -132,8 +134,8 @@ def registration_start(msg):
                            (msg.from_user.id,))
             x = cursor.fetchall()
     except:
-        x = None
-    if x:
+        x = False
+    if x != False:
         msg = bot.send_message(msg.chat.id, 'Напиши в чат свой ник.')
         with sqlite3.connect('mafiaclub_hse.db') as con:
             cursor = con.cursor()
@@ -171,7 +173,8 @@ def registration_img(msg):
                         where user_id = ?
                         ''',
                        (msg.photo, msg.from_user.id))
-    bot.register_next_step_handler(msg, registration_img)
+    bot.register_next_step_handler(msg, registration_resume)
+
 
 def registration_resume(msg):
     msg = bot.send_message(msg.chat.id, 'Пришли текстовый файл в чат.')
@@ -231,7 +234,6 @@ def callback_worker(call):
         get_info(call)
     if call.text == 'Регистрация нового участника':
         registration_name(call)
-
 
 
 bot.polling(none_stop=True, interval=0)
