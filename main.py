@@ -237,10 +237,10 @@ def registration_start(call):
             cursor = con.cursor()
             cursor.execute('INSERT INTO gamers (user_id, nickname) VALUES (?, ?)', (msg.from_user.id, msg.text))
             conn.commit()
-        bot.send_message(msg.chat.id, 'Запомнил, идем к следующему шагу.')
-        bot.register_next_step_handler(msg, registration_name)
+            bot.send_message(msg.chat.id, 'Запомнил, идем к следующему шагу.')
+            bot.register_next_step_handler(msg, registration_name)
     except:
-        msg = bot.send_message(msg.chat.id, 'Ты уже зарегистрирован.')
+        bot.send_message(call.chat.id, 'Ты уже зарегистрирован.')
         send_keyboard(msg, "Чем еще могу помочь?")
 
 
@@ -337,4 +337,4 @@ def callback_worker(call):
         change_resume(call)
 
 
-#bot.polling(none_stop=True, interval=0)
+bot.polling(none_stop=True, interval=0)
