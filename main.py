@@ -292,7 +292,7 @@ def info_profile(msg):
         cursor.execute('''
                         select *
                         from gamers
-                        where user_id = ?
+                        where user_id = 9999999999999
                         ''',
                        (msg.from_user.id,))
         info = info_get_string(cursor.fetchall())
