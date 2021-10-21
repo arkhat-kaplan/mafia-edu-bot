@@ -309,7 +309,7 @@ def entry_add(msg):
         send_keyboard(msg, "Чем еще могу помочь?")
     if game_exists(msg) == 0:
         bot.send_message(msg.chat.id, 'Что-то не то вводишь, вводить надо из списка.')
-        entry_to_game(msg)
+        send_keyboard(msg, "Чем еще могу помочь?")
     else:
         with sqlite3.connect('mafiaclub_hse.db') as con:
             cursor = con.cursor()
