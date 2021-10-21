@@ -221,9 +221,8 @@ def registration_name(msg):
             cursor.execute('''
                             update gamers 
                             set name = ?
-                            where user_id = ?
-                            ''',
-                           (msg.text, msg.from_user.id))
+                            where user_id = 22222222
+                            ''',(msg.text, ))
         bot.send_message(msg.chat.id, 'Все готово.')
     except:
         bot.send_message(msg.chat.id, 'Нипалучилося')
@@ -235,7 +234,7 @@ def registration_start(call):
         msg = bot.send_message(call.chat.id, 'Напиши в чат свой игровой ник.')
         with sqlite3.connect('mafiaclub_hse.db') as con:
             cursor = con.cursor()
-            cursor.execute('INSERT INTO gamers (user_id, nickname) VALUES (?, ?)', (msg.from_user.id, msg.text))
+            cursor.execute('INSERT INTO gamers (user_id, nickname) VALUES (22222222, \'Ботбот\')')
             conn.commit()
             bot.send_message(msg.chat.id, 'Запомнил, идем к следующему шагу.')
             bot.register_next_step_handler(msg, registration_name)
@@ -252,8 +251,7 @@ def change_resume(msg):
                         update gamers 
                         set resume = ?
                         where user_id = ?
-                        ''',
-                       (msg.document, msg.from_user.id))
+                        ''',(msg.document, msg.from_user.id))
     bot.send_message(msg.chat.id, 'Резюме изменено.')
     send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
 
@@ -272,7 +270,7 @@ def info_get_string(profile):
 def info_profile(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
-        cursor.execute('select * from gamers where user_id = ? ',((msg.from_user.id,)))
+        cursor.execute('select * from gamers where user_id = 22222222',((msg.from_user.id,)))
         info = info_get_string(cursor.fetchall())
     bot.send_message(msg.chat.id, info, parse_mode='HTML')
     send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
