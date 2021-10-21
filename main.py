@@ -119,7 +119,7 @@ def get_info(msg):
 
 # Вывести информацию о боте - Конец
 
-# Регистрация нового игрока - Начало - Проверить
+# Регистрация нового игрока - Начало - Не работает скотобаза
 
 
 def registration_start(msg):
@@ -191,6 +191,30 @@ def registration_resume(msg):
 
 
 # Регистрация нового игрока - Конец
+
+# Показать профиль - Начало
+
+def info_get_string(profile):
+    info_str = []
+    for val in list(enumerate(profile)):
+        info_str.append(f''' Игрок № {str(val[0] + 1)} - <b>"{val[1][0]}"</b> \n 
+                            Имя: <i>{val[2][0]}</i> \n''')
+    return ''.join(info_str)
+
+def registration_resume(msg):
+    with sqlite3.connect('mafiaclub_hse.db') as con:
+        cursor = con.cursor()
+        cursor.execute('''
+                        select *
+                        from gamers
+                        where user_id = ?
+                        ''',
+                       (msg.from_user.id,))
+
+    bot.send_message(msg.chat.id, 'Это был последний шаг, поздравляю с регистрацией <3.')
+    send_keyboard(msg, "Чем еще могу помочь?")
+
+# Показать профиль - Конец
 
 # Показать ближайшую игру - Начало - работает, аллилуя!
 
