@@ -254,6 +254,18 @@ def registered_to_game(msg):
         return 0
 
 
+def game_exists(msg):
+    with sqlite3.connect('mafiaclub_hse.db') as con:
+        cursor = con.cursor()
+        cursor.execute('select id from games where id = ?',
+                       msg.text)
+        game = cursor.fetchall()
+    if game:
+        return 1
+    else:
+        return 0
+
+
 def get_games_index(games):
     games_str = []
     for val in list(enumerate(games)):
@@ -292,9 +304,12 @@ def entry_to_game(msg):
 
 
 def entry_add(msg):
-    if registered_to_game(msg) == 1:
+    if registered_to_game(msg) == 1 and game_exists(msg) == 1:
         bot.send_message(msg.chat.id, 'Ты уже зарегистрирован на эту игру.')
         send_keyboard(msg, "Чем еще могу помочь?")
+    if game_exists(msg) == 0:
+        bot.send_message(msg.chat.id, 'Что-то не то вводишь, вводить надо из списка.')
+        entry_to_game(msg)
     else:
         with sqlite3.connect('mafiaclub_hse.db') as con:
             cursor = con.cursor()
