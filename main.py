@@ -258,7 +258,7 @@ def game_exists(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
         cursor.execute('select id from games where id = ?',
-                       msg.text)
+                       (msg.text,))
         game = cursor.fetchall()
     if game:
         return 1
