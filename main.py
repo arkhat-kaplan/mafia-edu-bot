@@ -307,7 +307,7 @@ def entry_add(msg):
     if registered_to_game(msg) == 1 and game_exists(msg) == 1:
         bot.send_message(msg.chat.id, 'Ты уже зарегистрирован на эту игру.')
         send_keyboard(msg, "Чем еще могу помочь?")
-    if game_exists(msg) == 0:
+    elif game_exists(msg) == 0:
         bot.send_message(msg.chat.id, 'Что-то не то вводишь, вводить надо из списка.')
         send_keyboard(msg, "Чем еще могу помочь?")
     else:
