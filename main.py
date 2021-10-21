@@ -210,16 +210,19 @@ def registration_img(msg):
 
 
 def registration_name(msg):
-    msg = bot.send_message(msg.chat.id, 'Напиши в чат своё имя.')
-    with sqlite3.connect('mafiaclub_hse.db') as con:
-        cursor = con.cursor()
-        cursor.execute('''
-                        update gamers 
-                        set name = ?
-                        where user_id = ?
-                        ''',
-                       (msg.text, msg.from_user.id))
-        con.commit()
+    try:
+        msg = bot.send_message(msg.chat.id, 'Напиши в чат своё имя.')
+        with sqlite3.connect('mafiaclub_hse.db') as con:
+            cursor = con.cursor()
+            cursor.execute('''
+                            update gamers 
+                            set name = ?
+                            where user_id = ?
+                            ''',
+                           (msg.text, msg.from_user.id))
+            con.commit()
+    except:
+        bot.send_message(msg.chat.id, 'Нипалучилося')
     #bot.register_next_step_handler(msg, registration_img)
 
 
