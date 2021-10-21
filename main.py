@@ -289,11 +289,7 @@ def info_get_resume(profile):
 def info_profile(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
-        cursor.execute('''
-                        select *
-                        from gamers
-                        where user_id = 9999999999999
-                        ''',
+        cursor.execute('select * from gamers where user_id = 9999999999999 ',
                        (msg.from_user.id,))
         info = info_get_string(cursor.fetchall())
         #+ '\n' + info_get_resume(cursor.fetchall())
