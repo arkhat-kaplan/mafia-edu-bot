@@ -17,9 +17,8 @@ def send_keyboard(message, text="Привет, чем я могу тебе по�
     itembtn3 = types.KeyboardButton('Регистрация нового участника')
     itembtn4 = types.KeyboardButton('Запись на игру')
     itembtn5 = types.KeyboardButton('Просмотреть профиль')
-    itembtn6 = types.KeyboardButton('Нет, спасибо!')
     keyboard.add(itembtn1, itembtn2)
-    keyboard.add(itembtn3, itembtn4, itembtn5, itembtn6)
+    keyboard.add(itembtn3, itembtn4, itembtn5)
     msg = bot.send_message(message.from_user.id,
                            text=text, reply_markup=keyboard)
     bot.register_next_step_handler(msg, callback_worker)
@@ -29,7 +28,7 @@ def send_keyboard(message, text="Привет, чем я могу тебе по�
 def send_keyboard_add_gamedate(message, text="Привет, чем я могу тебе помочь?"):
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
     itembtn1 = types.KeyboardButton('Добавить новую игру в расписание')
-    itembtn2 = types.KeyboardButton('Удалить ошибочную запись об игре')
+    itembtn2 = types.KeyboardButton('Нет, спасибо!')
     keyboard.add(itembtn1, itembtn2)
     msg = bot.send_message(message.from_user.id,
                            text=text, reply_markup=keyboard)
@@ -60,7 +59,7 @@ except:
     pass
 
 try:
-    query = "CREATE TABLE \"gamers\" (\"user_id\" INTEGER UNIQUE, \"nickname\" TEXT, \"name\" TEXT, \"img\" BLOP, \"resume\" BLOP, PRIMARY KEY (\"user_id\"))"
+    query = "CREATE TABLE \"gamers\" (\"id\" INTEGER UNIQUE, \"user_id\" INTEGER, \"nickname\" TEXT, \"name\" TEXT, PRIMARY KEY (\"user_id\"))"
     cursor.execute(query)
 except:
     pass
@@ -128,6 +127,7 @@ def add_game(msg):
 
 # Вывести информацию о боте - Начало - Проверить
 
+
 def get_info(msg):
     msg = bot.send_message(msg.chat.id,
                            'Привет, я бот-помощник клуба по игре мафия. Ты можешь ознакомиться с тем что я умею с помощью команды /start, по секрету есть еще команда /new но она для администраторов.')
@@ -139,51 +139,55 @@ def get_info(msg):
 # Регистрация нового игрока - Начало - Не работает скотобаза
 
 
-def change_nickname(msg):
-    msg = bot.send_message(msg.chat.id, 'Напиши в чат свой ник.')
+def registered(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
-        cursor.execute('''
-                        update gamers 
-                        set nickname = ?
-                        where user_id = ?
-                        ''',
-                       (msg.from_user.id, msg.text))
+        cursor.execute('select user_id from gamers where user_id = ?',
+                       (msg.from_user.id,))
+        user = cursor.fetchall()
+    if user:
+        return 1
+    else:
+        return 0
+
+
+def change_nickname(msg):
+    with sqlite3.connect('mafiaclub_hse.db') as con:
+        cursor = con.cursor()
+        cursor.execute('update gamers set nickname = ? where user_id = ?',
+                       (msg.text, msg.from_user.id))
         con.commit()
-    bot.send_message(msg.chat.id, 'Никнейм изменено.')
+    bot.send_message(msg.chat.id, 'Никнейм изменен.')
     send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
 
 
 def change_name(msg):
-    msg = bot.send_message(msg.chat.id, 'Напиши в чат своё имя.')
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
-        cursor.execute('''
-                        update gamers 
-                        set name = ?
-                        where user_id = ?
-                        ''',
+        cursor.execute('update gamers set name = ? where user_id = ?',
                        (msg.text, msg.from_user.id))
         con.commit()
     bot.send_message(msg.chat.id, 'Имя изменено.')
     send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
 
+
 def registration_start(msg):
-    with sqlite3.connect('mafiaclub_hse.db') as con:
-        cursor = con.cursor()
-        cursor.execute("INSERT INTO gamers (user_id, nickname) VALUES (?, ?)", (msg.from_user.id, msg.text))
-        con.commit()
-    msg = bot.send_message(msg.chat.id, 'Напиши в чат своё имя.')
-    bot.register_next_step_handler(msg, registration_name)
+    if registered(msg) == 0:
+        with sqlite3.connect('mafiaclub_hse.db') as con:
+            cursor = con.cursor()
+            cursor.execute("INSERT INTO gamers (user_id, nickname) VALUES (?, ?)", (msg.from_user.id, msg.text))
+            con.commit()
+        msg = bot.send_message(msg.chat.id, 'Напиши в чат своё имя.')
+        bot.register_next_step_handler(msg, registration_name)
+    else:
+        bot.send_message(msg.chat.id, 'Вы уже зарегистрированы.')
+        send_keyboard(msg, "Чем еще могу помочь?")
+
 
 def registration_name(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
-        cursor.execute('''
-                        update gamers 
-                        set name = ?
-                        where user_id = 22222222
-                        ''', (msg.text, msg.from_user.id))
+        cursor.execute('update gamers set name = ? where user_id = ?', (msg.text, msg.from_user.id))
         con.commit()
     send_keyboard(msg, "Чем еще могу помочь?")
 
@@ -196,13 +200,14 @@ def registration_name(msg):
 def info_get_string(profile):
     info_str = []
     for val in list(enumerate(profile)):
-        info_str.append(f'''Игрок № {val[1][0]} - <b>"{val[1][1]}"</b> \nИмя: <i>{val[1][2]}</i> \n''')
+        info_str.append(f'''Игрок № {str(val[0] + 1)} - <b>"{val[1][2]}"</b> \nИмя: <i>{val[1][3]}</i> \n''')
     return ''.join(info_str)
+
 
 def info_profile(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
-        cursor.execute('select * from gamers where user_id = 22222222', (msg.from_user.id,))
+        cursor.execute('select * from gamers where user_id = ?', (msg.from_user.id,))
         info = info_get_string(cursor.fetchall())
     bot.send_message(msg.chat.id, info, parse_mode='HTML')
     send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
@@ -234,15 +239,77 @@ def show_games(msg):
 
 # Показать ближайшую игру - Конец
 
+# Записаться на игру - Начало
+
+
+def registered_to_game(msg):
+    with sqlite3.connect('mafiaclub_hse.db') as con:
+        cursor = con.cursor()
+        cursor.execute('select user_id from entries where user_id = ? and game_id = ?',
+                       (msg.from_user.id, msg.text))
+        game = cursor.fetchall()
+    if game:
+        return 1
+    else:
+        return 0
+
+
+def get_games_index(games):
+    games_str = []
+    for val in list(enumerate(games)):
+        games_str.append(val[1][0])
+    return games_str
+
+
+def get_games_string_with_index(games):
+    games_str = []
+    for val in list(enumerate(games)):
+        y = str(val[1][2])
+        y = y[:4] + '-' + y[4:6] + '-' + y[6:]
+        games_str.append('№' + str(val[1][0]) + ' - <i>' + val[1][1] + '</i> - <b>' + y + '</b>\n')
+    return ''.join(games_str)
+
+
+def entry_to_game(msg):
+    with sqlite3.connect('mafiaclub_hse.db') as con:
+        cursor = con.cursor()
+        cursor.execute('SELECT id, description, date FROM games WHERE date >= strftime(\'%Y%m%d\',\'now\') LIMIT 3')
+        x = cursor.fetchall()
+    ins = get_games_index(x)
+    markup2 = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+    for value in ins:
+        markup2.add(types.KeyboardButton(value))
+    msg = bot.send_message(msg.from_user.id,
+                            text="Выбери номер игры из списка",
+                            reply_markup=markup2)
+    games = get_games_string_with_index(x)
+    bot.send_message(msg.chat.id, games, parse_mode='HTML')
+    bot.register_next_step_handler(msg, entry_add)
+
+
+def entry_add(msg):
+    if registered_to_game(msg) == 1:
+        bot.send_message(msg.chat.id, 'Ты уже зарегистрирован на эту игру.')
+        send_keyboard(msg, "Чем еще могу помочь?")
+    else:
+        with sqlite3.connect('mafiaclub_hse.db') as con:
+            cursor = con.cursor()
+            cursor.execute('insert into entries (game_id, user_id) values (?, ?)', (msg.text, msg.from_user.id))
+            con.commit()
+            bot.send_message(msg.chat.id, 'Готово, ты зарегистрирован на игру.')
+            send_keyboard(msg, "Чем еще могу помочь?")
+
+
+# Записаться на игру - Конец
+
 # Все соединяем - Начало
 @bot.message_handler(content_types=['text'])
 def callback_worker(call):
     if call.text == "Добавить новую игру в расписание":
         msg = bot.send_message(call.chat.id, 'Давайте добавим игру! Напишите ее описание в чат!')
         bot.register_next_step_handler(msg, add_game)
-    if call.text == "Добавить дату новой игры в расписание":
-        msg = bot.send_message(call.chat.id, 'Напиши в чат дату формата ГГГГ-ММ-ДД')
-        bot.register_next_step_handler(msg, add_gamedate)
+    if call.text == "Запись на игру":
+        entry_to_game(call)
     if call.text == "Удалить ошибочную запись об игре":
         msg = bot.send_message(call.chat.id, 'Ты уверен?')
         bot.register_next_step_handler(msg, drop_game)
@@ -256,17 +323,13 @@ def callback_worker(call):
     if call.text == 'Просмотреть профиль':
         info_profile(call)
     if call.text == 'Нет, спасибо':
-        bot.send_message(msg.chat.id, 'Понял - принял.', parse_mode='HTML')
-        send_keyboard(msg, "Чем еще могу помочь?")
+        send_keyboard(call, "Чем еще могу помочь?")
     if call.text == 'Изменить игровой никнейм':
-        change_nickname(call)
+        msg = bot.send_message(call.chat.id, 'Напиши свой игровой ник')
+        bot.register_next_step_handler(msg, change_nickname)
     if call.text == 'Изменить имя в профиле':
-        change_name(call)
+        msg = bot.send_message(call.chat.id, 'Напиши свое имя')
+        bot.register_next_step_handler(msg, change_name)
 
 
-with sqlite3.connect('mafiaclub_hse.db') as con:
-    cursor = con.cursor()
-    cursor.execute("select * from gamers")
-    print(cursor.fetchall())
-
-# bot.polling(none_stop=True, interval=0)
+bot.polling(none_stop=True, interval=0)
