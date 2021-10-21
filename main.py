@@ -28,7 +28,7 @@ def send_keyboard(message, text="Привет, чем я могу тебе по�
 def send_keyboard_add_gamedate(message, text="Привет, чем я могу тебе помочь?"):
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
     itembtn1 = types.KeyboardButton('Добавить новую игру в расписание')
-    itembtn2 = types.KeyboardButton('Нет, спасибо!')
+    itembtn2 = types.KeyboardButton('Нет, спасибо')
     keyboard.add(itembtn1, itembtn2)
     msg = bot.send_message(message.from_user.id,
                            text=text, reply_markup=keyboard)
@@ -189,7 +189,7 @@ def registration_name(msg):
         cursor = con.cursor()
         cursor.execute('update gamers set name = ? where user_id = ?', (msg.text, msg.from_user.id))
         con.commit()
-    send_keyboard(msg, "Чем еще могу помочь?")
+    send_keyboard(msg, "Зарегистрирован! Чем еще могу помочь?")
 
 
 # Регистрация нового игрока - Конец
@@ -271,20 +271,24 @@ def get_games_string_with_index(games):
 
 
 def entry_to_game(msg):
-    with sqlite3.connect('mafiaclub_hse.db') as con:
-        cursor = con.cursor()
-        cursor.execute('SELECT id, description, date FROM games WHERE date >= strftime(\'%Y%m%d\',\'now\') LIMIT 3')
-        x = cursor.fetchall()
-    ins = get_games_index(x)
-    markup2 = types.ReplyKeyboardMarkup(one_time_keyboard=True)
-    for value in ins:
-        markup2.add(types.KeyboardButton(value))
-    msg = bot.send_message(msg.from_user.id,
-                            text="Выбери номер игры из списка",
-                            reply_markup=markup2)
-    games = get_games_string_with_index(x)
-    bot.send_message(msg.chat.id, games, parse_mode='HTML')
-    bot.register_next_step_handler(msg, entry_add)
+    if registered(msg) == 1:
+        with sqlite3.connect('mafiaclub_hse.db') as con:
+            cursor = con.cursor()
+            cursor.execute('SELECT id, description, date FROM games WHERE date >= strftime(\'%Y%m%d\',\'now\') LIMIT 3')
+            x = cursor.fetchall()
+        ins = get_games_index(x)
+        markup2 = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+        for value in ins:
+            markup2.add(types.KeyboardButton(value))
+        msg = bot.send_message(msg.from_user.id,
+                                text="Выбери номер игры из списка",
+                                reply_markup=markup2)
+        games = get_games_string_with_index(x)
+        bot.send_message(msg.chat.id, games, parse_mode='HTML')
+        bot.register_next_step_handler(msg, entry_add)
+    else:
+        msg = bot.send_message(msg.chat.id, 'Сначала зарегистрируйся! Напиши свой игровой ник')
+        bot.register_next_step_handler(msg, registration_start)
 
 
 def entry_add(msg):
