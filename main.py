@@ -41,12 +41,9 @@ def send_keyboard_change_profile(message, text="Выбери что хочешь
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
     itembtn1 = types.KeyboardButton('Изменить игровой никнейм')
     itembtn2 = types.KeyboardButton('Изменить имя в профиле')
-    itembtn3 = types.KeyboardButton('Изменить фотографию')
-    itembtn4 = types.KeyboardButton('Изменить резюме игрока')
-    itembtn5 = types.KeyboardButton('Нет, спасибо')
+    itembtn3 = types.KeyboardButton('Нет, спасибо')
     keyboard.add(itembtn1, itembtn2)
-    keyboard.add(itembtn3, itembtn4)
-    keyboard.add(itembtn5)
+    keyboard.add(itembtn3)
     msg = bot.send_message(message.from_user.id,
                            text=text, reply_markup=keyboard)
     bot.register_next_step_handler(msg, callback_worker)
@@ -222,8 +219,9 @@ def registration_name(msg):
                             set name = ?
                             where user_id = ?
                             ''',
-                           ((msg.text, msg.from_user.id)))
+                           (msg.text, msg.from_user.id))
             con.commit()
+        bot.send_message(msg.chat.id, 'Все готово.')
     except:
         bot.send_message(msg.chat.id, 'Нипалучилося')
     #bot.register_next_step_handler(msg, registration_img)
@@ -234,8 +232,13 @@ def registration_start(msg):
         msg = bot.send_message(msg.chat.id, 'Напиши в чат свой игровой ник.')
         with sqlite3.connect('mafiaclub_hse.db') as con:
             cursor = con.cursor()
-            cursor.execute('insert into gamers (user_id, nickname) values(?, ?)', ((msg.from_user.id, msg.text)))
+            cursor.execute('''
+                              INSERT INTO gamers (user_id, nickname) 
+                              VALUES (?, ?)
+                              ''',
+                           (msg.from_user.id, msg.text))
             con.commit()
+        bot.send_message(msg.chat.id, 'Запомнил, идем к следующему шагу.')
         bot.register_next_step_handler(msg, registration_name)
     except:
         msg = bot.send_message(msg.chat.id, 'Ты уже зарегистрирован.')
