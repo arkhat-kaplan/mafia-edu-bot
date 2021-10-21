@@ -135,35 +135,6 @@ def get_info(msg):
 # Регистрация нового игрока - Начало - Не работает скотобаза
 
 
-def registration_start(msg):
-    try:
-        with sqlite3.connect('mafiaclub_hse.db') as con:
-            cursor = con.cursor()
-            cursor.execute('''
-                            select user_id
-                            from gamers 
-                            where user_id = ?
-                            ''',
-                           (msg.from_user.id,))
-            x = cursor.fetchall()
-    except:
-        x = False
-    if x != False:
-        msg = bot.send_message(msg.chat.id, 'Напиши в чат свой ник.')
-        with sqlite3.connect('mafiaclub_hse.db') as con:
-            cursor = con.cursor()
-            cursor.execute('''
-                            insert into gamers (user_id, nickname)
-                            values(?, ?)
-                            ''',
-                           (msg.from_user.id, msg.text))
-            con.commit()
-        bot.register_next_step_handler(msg, registration_name)
-    else:
-        msg = bot.send_message(msg.chat.id, 'Ты уже зарегистрирован.')
-        send_keyboard(msg, "Чем еще могу помочь?")
-
-
 def change_nickname(msg):
     msg = bot.send_message(msg.chat.id, 'Напиши в чат свой ник.')
     with sqlite3.connect('mafiaclub_hse.db') as con:
@@ -173,24 +144,11 @@ def change_nickname(msg):
                         set nickname = ?
                         where user_id = ?
                         ''',
-                        (msg.from_user.id, msg.text))
+                       (msg.from_user.id, msg.text))
         con.commit()
     bot.send_message(msg.chat.id, 'Никнейм изменено.')
     send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
 
-
-def registration_name(msg):
-    msg = bot.send_message(msg.chat.id, 'Напиши в чат своё имя.')
-    with sqlite3.connect('mafiaclub_hse.db') as con:
-        cursor = con.cursor()
-        cursor.execute('''
-                        update gamers 
-                        set name = ?
-                        where user_id = ?
-                        ''',
-                       (msg.text, msg.from_user.id))
-        con.commit()
-    bot.register_next_step_handler(msg, registration_img)
 
 def change_name(msg):
     msg = bot.send_message(msg.chat.id, 'Напиши в чат своё имя.')
@@ -205,20 +163,6 @@ def change_name(msg):
         con.commit()
     bot.send_message(msg.chat.id, 'Имя изменено.')
     send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
-
-
-def registration_img(msg):
-    msg = bot.send_message(msg.chat.id, 'Пришли свою фотографию в чат.')
-    with sqlite3.connect('mafiaclub_hse.db') as con:
-        cursor = con.cursor()
-        cursor.execute('''
-                        update gamers 
-                        set img = ?
-                        where user_id = ?
-                        ''',
-                       (msg.photo, msg.from_user.id))
-        con.commit()
-    bot.register_next_step_handler(msg, registration_resume)
 
 
 def change_img(msg):
@@ -237,7 +181,7 @@ def change_img(msg):
 
 
 def registration_resume(msg):
-    msg = bot.send_message(msg.chat.id, 'Пришли текстовый файл в чат.')
+    msg = bot.send_message(msg.chat.id, 'Пришли текстовый файл своего резюме в чат.')
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
         cursor.execute('''
@@ -249,6 +193,51 @@ def registration_resume(msg):
         con.commit()
     bot.send_message(msg.chat.id, 'Это был последний шаг, поздравляю с регистрацией <3.')
     send_keyboard(msg, "Чем еще могу помочь?")
+
+
+def registration_img(msg):
+    msg = bot.send_message(msg.chat.id, 'Пришли свою фотографию в чат.')
+    with sqlite3.connect('mafiaclub_hse.db') as con:
+        cursor = con.cursor()
+        cursor.execute('''
+                        update gamers 
+                        set img = ?
+                        where user_id = ?
+                        ''',
+                       (msg.photo, msg.from_user.id))
+        con.commit()
+    bot.register_next_step_handler(msg, registration_resume)
+
+
+def registration_name(msg):
+    msg = bot.send_message(msg.chat.id, 'Напиши в чат своё имя.')
+    with sqlite3.connect('mafiaclub_hse.db') as con:
+        cursor = con.cursor()
+        cursor.execute('''
+                        update gamers 
+                        set name = ?
+                        where user_id = ?
+                        ''',
+                       (msg.text, msg.from_user.id))
+        con.commit()
+    bot.register_next_step_handler(msg, registration_img)
+
+
+def registration_start(msg):
+    try:
+        msg = bot.send_message(msg.chat.id, 'Напиши в чат свой ник.')
+        with sqlite3.connect('mafiaclub_hse.db') as con:
+            cursor = con.cursor()
+            cursor.execute('''
+                            insert into gamers (user_id, nickname)
+                            values(?, ?)
+                            ''',
+                           (msg.from_user.id, msg.text))
+            con.commit()
+        bot.register_next_step_handler(msg, registration_name)
+    except:
+        msg = bot.send_message(msg.chat.id, 'Ты уже зарегистрирован.')
+        send_keyboard(msg, "Чем еще могу помочь?")
 
 
 def change_resume(msg):
@@ -309,6 +298,7 @@ def info_profile(msg):
     bot.send_message(msg.chat.id, img)
     bot.send_message(msg.chat.id, info)
     send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
+
 
 # Показать профиль - Конец
 
