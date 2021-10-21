@@ -230,7 +230,7 @@ def registration_name(msg):
 def registration_start(msg):
     try:
         msg = bot.send_message(msg.chat.id, 'Напиши в чат свой игровой ник.')
-        cursor.execute('INSERT INTO gamers (user_id, nickname) VALUES (?, ?)', (msg.from_user.id, msg.text))
+        cursor.execute('INSERT INTO gamers (user_id, nickname) VALUES (?, ?)', ((msg.from_user.id, msg.text)))
         conn.commit()
         bot.send_message(msg.chat.id, 'Запомнил, идем к следующему шагу.')
         bot.register_next_step_handler(msg, registration_name)
