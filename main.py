@@ -225,7 +225,7 @@ def registration_name(msg):
 
 def registration_start(msg):
     try:
-        msg = bot.send_message(msg.chat.id, 'Напиши в чат свой ник.')
+        msg = bot.send_message(msg.chat.id, 'Напиши в чат свой игровой ник.')
         with sqlite3.connect('mafiaclub_hse.db') as con:
             cursor = con.cursor()
             cursor.execute('''
