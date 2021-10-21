@@ -266,8 +266,7 @@ def change_resume(msg):
 def info_get_string(profile):
     info_str = []
     for val in list(enumerate(profile)):
-        info_str.append(f''' Игрок № {val[1][0]} - <b>"{val[1][1]}"</b> \n 
-                            Имя: <i>{val[1][2]}</i> \n''')
+        info_str.append(f'''Игрок № {val[1][0]} - <b>"{val[1][1]}"</b> \nИмя: <i>{val[1][2]}</i> \n''')
     return ''.join(info_str)
 
 
@@ -296,11 +295,12 @@ def info_profile(msg):
                         where user_id = ?
                         ''',
                        (msg.from_user.id,))
-        info = info_get_string(cursor.fetchall()) #+ '\n' + info_get_resume(cursor.fetchall())
+        info = info_get_string(cursor.fetchall())
+        #+ '\n' + info_get_resume(cursor.fetchall())
         #img = info_get_img(cursor.fetchall())
-    #bot.send_message(msg.chat.id, img)
-    bot.send_message(msg.chat.id, info)
-    send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
+        #bot.send_message(msg.chat.id, img)
+        bot.send_message(msg.chat.id, info)
+        send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
 
 
 # Показать профиль - Конец
