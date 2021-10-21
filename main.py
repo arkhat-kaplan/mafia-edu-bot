@@ -233,7 +233,7 @@ def registration_start(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
         cursor.execute("INSERT INTO gamers (user_id, nickname) VALUES (22222222, 'Ботбот')")
-        conn.commit()
+        con.commit()
         bot.send_message(msg.chat.id, 'Запомнил, идем к следующему шагу.')
         bot.register_next_step_handler(msg, registration_name)
 
