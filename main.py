@@ -172,14 +172,13 @@ def change_name(msg):
 def registration_name(msg):
     try:
         with sqlite3.connect('mafiaclub_hse.db') as con:
-            msg = bot.send_message(msg.chat.id, 'Напиши в чат своё имя.')
+            bot.send_message(msg.chat.id, 'Напиши в чат своё имя.')
             cursor = con.cursor()
             cursor.execute('''
                             update gamers 
                             set name = ?
                             where user_id = 22222222
                             ''', msg.text)
-            bot.send_message(msg.chat.id, 'Все готово.')
     except:
         bot.send_message(msg.chat.id, 'Нипалучилося')
 
@@ -189,7 +188,6 @@ def registration_start(msg):
         cursor = con.cursor()
         cursor.execute("INSERT INTO gamers (user_id, nickname) VALUES (22222222, 'Ботбот')")
         con.commit()
-        bot.send_message(msg.chat.id, 'Запомнил, идем к следующему шагу.')
         bot.register_next_step_handler(msg, registration_name)
 
 
@@ -267,10 +265,6 @@ def callback_worker(call):
         change_nickname(call)
     if call.text == 'Изменить имя в профиле':
         change_name(call)
-    if call.text == 'Изменить фотографию':
-        change_img(call)
-    if call.text == 'Изменить резюме игрока':
-        change_resume(call)
 
 
 bot.polling(none_stop=True, interval=0)
