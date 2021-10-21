@@ -230,17 +230,13 @@ def registration_name(msg):
 
 
 def registration_start(call):
-    try:
-        msg = bot.send_message(call.chat.id, 'Напиши в чат свой игровой ник.')
-        with sqlite3.connect('mafiaclub_hse.db') as con:
-            cursor = con.cursor()
-            cursor.execute('INSERT INTO gamers (user_id, nickname) VALUES (22222222, \'Ботбот\')')
-            conn.commit()
-            bot.send_message(msg.chat.id, 'Запомнил, идем к следующему шагу.')
-            bot.register_next_step_handler(msg, registration_name)
-    except:
-        bot.send_message(call.chat.id, 'Ты уже зарегистрирован.')
-        send_keyboard(msg, "Чем еще могу помочь?")
+    msg = bot.send_message(call.chat.id, 'Напиши в чат свой игровой ник.')
+    with sqlite3.connect('mafiaclub_hse.db') as con:
+        cursor = con.cursor()
+        cursor.execute('INSERT INTO gamers (user_id, nickname) VALUES (22222222, \'Ботбот\')')
+        conn.commit()
+        bot.send_message(msg.chat.id, 'Запомнил, идем к следующему шагу.')
+        bot.register_next_step_handler(msg, registration_name)
 
 
 def change_resume(msg):
