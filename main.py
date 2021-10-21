@@ -229,11 +229,10 @@ def registration_name(msg):
     #bot.register_next_step_handler(msg, registration_img)
 
 
-def registration_start(call):
-    msg = bot.send_message(call.chat.id, 'Напиши в чат свой игровой ник.')
+def registration_start(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
-        cursor.execute('INSERT INTO gamers (user_id, nickname) VALUES (22222222, \'Ботбот\')')
+        cursor.execute("INSERT INTO gamers (user_id, nickname) VALUES (22222222, 'Ботбот')")
         conn.commit()
         bot.send_message(msg.chat.id, 'Запомнил, идем к следующему шагу.')
         bot.register_next_step_handler(msg, registration_name)
@@ -315,7 +314,8 @@ def callback_worker(call):
     if call.text == "Информация о боте":
         get_info(call)
     if call.text == 'Регистрация нового участника':
-        registration_start(call)
+        msg = bot.send_message(call.chat.id, 'Напиши свой игровой ник')
+        bot.register_next_step_handler(msg, registration_start)
     if call.text == 'Просмотреть профиль':
         info_profile(call)
     if call.text == 'Нет, спасибо':
