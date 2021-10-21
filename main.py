@@ -265,7 +265,7 @@ def info_get_string(profile):
 def info_profile(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
-        cursor.execute('select * from gamers where user_id = 22222222',((msg.from_user.id,)))
+        cursor.execute('select * from gamers where user_id = 22222222', (msg.from_user.id,))
         info = info_get_string(cursor.fetchall())
     bot.send_message(msg.chat.id, info, parse_mode='HTML')
     send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
