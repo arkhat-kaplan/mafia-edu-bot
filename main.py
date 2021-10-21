@@ -269,31 +269,11 @@ def info_get_string(profile):
         info_str.append(f'''Игрок № {val[1][0]} - <b>"{val[1][1]}"</b> \nИмя: <i>{val[1][2]}</i> \n''')
     return ''.join(info_str)
 
-
-def info_get_img(profile):
-    info_img = []
-    for val in list(enumerate(profile)):
-        info_img.append(val[1][3])
-    return ''.join(info_img)
-
-
-def info_get_resume(profile):
-    info_resume = []
-    for val in list(enumerate(profile)):
-        with open(val[1][4], 'r') as file:
-            data = file.read().replace('\n', '')
-        info_resume.append(data)
-    return ''.join(info_resume)
-
-
 def info_profile(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
         cursor.execute('select * from gamers where user_id = ? ',((msg.from_user.id,)))
         info = info_get_string(cursor.fetchall())
-        #+ '\n' + info_get_resume(cursor.fetchall())
-        #img = info_get_img(cursor.fetchall())
-        #bot.send_message(msg.chat.id, img)
     bot.send_message(msg.chat.id, info, parse_mode='HTML')
     send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
 
@@ -357,4 +337,4 @@ def callback_worker(call):
         change_resume(call)
 
 
-bot.polling(none_stop=True, interval=0)
+#bot.polling(none_stop=True, interval=0)
