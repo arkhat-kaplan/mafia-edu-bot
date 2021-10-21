@@ -222,7 +222,7 @@ def registration_name(msg):
                             set name = ?
                             where user_id = ?
                             ''',
-                           (msg.text, msg.from_user.id))
+                           ((msg.text, msg.from_user.id)))
             con.commit()
     except:
         bot.send_message(msg.chat.id, 'Нипалучилося')
@@ -234,11 +234,7 @@ def registration_start(msg):
         msg = bot.send_message(msg.chat.id, 'Напиши в чат свой игровой ник.')
         with sqlite3.connect('mafiaclub_hse.db') as con:
             cursor = con.cursor()
-            cursor.execute('''
-                            insert into gamers (user_id, nickname)
-                            values(?, ?)
-                            ''',
-                           (msg.from_user.id, msg.text))
+            cursor.execute('insert into gamers (user_id, nickname) values(?, ?)', ((msg.from_user.id, msg.text)))
             con.commit()
         bot.register_next_step_handler(msg, registration_name)
     except:
