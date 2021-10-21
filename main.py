@@ -231,7 +231,7 @@ def get_games_string(games):
 def show_games(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
-        cursor.execute('SELECT description, date FROM games WHERE date >= strftime(\'%Y%m%d\',\'now\') LIMIT 3')
+        cursor.execute('SELECT description, date FROM games WHERE date >= strftime(\'%Y%m%d\',\'now\') order by date asc LIMIT 3')
         games = get_games_string(cursor.fetchall())
         bot.send_message(msg.chat.id, games, parse_mode='HTML')
         send_keyboard(msg, "Чем еще могу помочь?")
@@ -257,7 +257,7 @@ def registered_to_game(msg):
 def game_exists(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
-        cursor.execute('select id from games where id = ?',
+        cursor.execute('select id from games where id = ? and date >= strftime(\'%Y%m%d\',\'now\') order by date asc LIMIT 3',
                        (msg.text,))
         game = cursor.fetchall()
     if game:
