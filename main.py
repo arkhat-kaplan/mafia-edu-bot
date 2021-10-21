@@ -264,21 +264,21 @@ def info_get_string(profile):
     info_str = []
     for val in list(enumerate(profile)):
         info_str.append(f''' Игрок № {str(val[0] + 1)} - <b>"{val[1][0]}"</b> \n 
-                            Имя: <i>{val[2][0]}</i> \n''')
+                            Имя: <i>{val[1][1]}</i> \n''')
     return ''.join(info_str)
 
 
 def info_get_img(profile):
     info_img = []
     for val in list(enumerate(profile)):
-        info_img.append(val[3][0])
+        info_img.append(val[1][2])
     return ''.join(info_img)
 
 
 def info_get_resume(profile):
     info_resume = []
     for val in list(enumerate(profile)):
-        with open(val[3][0], 'r') as file:
+        with open(val[1][3], 'r') as file:
             data = file.read().replace('\n', '')
         info_resume.append(data)
     return ''.join(info_resume)
