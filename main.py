@@ -220,7 +220,7 @@ def registration_name(msg):
                         ''',
                        (msg.text, msg.from_user.id))
         con.commit()
-    bot.register_next_step_handler(msg, registration_img)
+    #bot.register_next_step_handler(msg, registration_img)
 
 
 def registration_start(msg):
@@ -263,22 +263,22 @@ def change_resume(msg):
 def info_get_string(profile):
     info_str = []
     for val in list(enumerate(profile)):
-        info_str.append(f''' Игрок № {str(val[0] + 1)} - <b>"{val[1][0]}"</b> \n 
-                            Имя: <i>{val[1][1]}</i> \n''')
+        info_str.append(f''' Игрок № {val[1][0]} - <b>"{val[1][1]}"</b> \n 
+                            Имя: <i>{val[1][2]}</i> \n''')
     return ''.join(info_str)
 
 
 def info_get_img(profile):
     info_img = []
     for val in list(enumerate(profile)):
-        info_img.append(val[1][2])
+        info_img.append(val[1][3])
     return ''.join(info_img)
 
 
 def info_get_resume(profile):
     info_resume = []
     for val in list(enumerate(profile)):
-        with open(val[1][3], 'r') as file:
+        with open(val[1][4], 'r') as file:
             data = file.read().replace('\n', '')
         info_resume.append(data)
     return ''.join(info_resume)
@@ -293,9 +293,9 @@ def info_profile(msg):
                         where user_id = ?
                         ''',
                        (msg.from_user.id,))
-        info = info_get_string(cursor.fetchall()) + '\n' + info_get_resume(cursor.fetchall())
-        img = info_get_img(cursor.fetchall())
-    bot.send_message(msg.chat.id, img)
+        info = info_get_string(cursor.fetchall()) #+ '\n' + info_get_resume(cursor.fetchall())
+        #img = info_get_img(cursor.fetchall())
+    #bot.send_message(msg.chat.id, img)
     bot.send_message(msg.chat.id, info)
     send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
 
