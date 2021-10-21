@@ -43,8 +43,10 @@ def send_keyboard_change_profile(message, text="Выбери что хочешь
     itembtn2 = types.KeyboardButton('Изменить имя в профиле')
     itembtn3 = types.KeyboardButton('Изменить фотографию')
     itembtn4 = types.KeyboardButton('Изменить резюме игрока')
+    itembtn5 = types.KeyboardButton('Нет, спасибо')
     keyboard.add(itembtn1, itembtn2)
     keyboard.add(itembtn3, itembtn4)
+    keyboard.add(itembtn5)
     msg = bot.send_message(message.from_user.id,
                            text=text, reply_markup=keyboard)
     bot.register_next_step_handler(msg, callback_worker)
@@ -290,7 +292,7 @@ def info_get_resume(profile):
 def info_profile(msg):
     with sqlite3.connect('mafiaclub_hse.db') as con:
         cursor = con.cursor()
-        cursor.execute('select * from gamers where user_id = 9999999999999 ')
+        cursor.execute('select * from gamers where user_id = ? ',((msg.from_user.id,)))
         info = info_get_string(cursor.fetchall())
         #+ '\n' + info_get_resume(cursor.fetchall())
         #img = info_get_img(cursor.fetchall())
@@ -345,6 +347,9 @@ def callback_worker(call):
         registration_start(call)
     if call.text == 'Просмотреть профиль':
         info_profile(call)
+    if call.text == 'Нет, спасибо':
+        bot.send_message(msg.chat.id, 'Понял - принял.', parse_mode='HTML')
+        send_keyboard(msg, "Чем еще могу помочь?")
     if call.text == 'Изменить игровой никнейм':
         change_nickname(call)
     if call.text == 'Изменить имя в профиле':
