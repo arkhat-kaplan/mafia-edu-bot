@@ -257,7 +257,7 @@ def callback_worker(call):
     if call.text == "Информация о боте":
         get_info(call)
     if call.text == 'Регистрация нового участника':
-        registration_name(call)
+        registration_start(call)
 
 
 bot.polling(none_stop=True, interval=0)
