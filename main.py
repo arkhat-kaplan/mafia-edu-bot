@@ -56,6 +56,10 @@ cursor = conn.cursor()
 try:
     query = "CREATE TABLE \"games\" (\"ID\" INTEGER UNIQUE, \"inserted_by\" INTEGER, \"description\" TEXT, \"date\" DATE, PRIMARY KEY (\"ID\"))"
     cursor.execute(query)
+except:
+    pass
+
+try:
     query = "CREATE TABLE \"gamers\" (\"user_id\" INTEGER UNIQUE, \"nickname\" TEXT, \"name\" TEXT, \"img\" BLOP, \"resume\" BLOP, PRIMARY KEY (\"user_id\"))"
     cursor.execute(query)
 except:
@@ -230,8 +234,10 @@ def registration_name(msg):
 def registration_start(msg):
     try:
         msg = bot.send_message(msg.chat.id, 'Напиши в чат свой игровой ник.')
-        cursor.execute('INSERT INTO gamers (user_id, nickname) VALUES (?, ?)', ((msg.from_user.id, msg.text)))
-        conn.commit()
+        with sqlite3.connect('mafiaclub_hse.db') as con:
+            cursor = con.cursor()
+            cursor.execute('INSERT INTO gamers (user_id, nickname) VALUES (?, ?)', (msg.from_user.id, msg.text))
+            conn.commit()
         bot.send_message(msg.chat.id, 'Запомнил, идем к следующему шагу.')
         bot.register_next_step_handler(msg, registration_name)
     except:
