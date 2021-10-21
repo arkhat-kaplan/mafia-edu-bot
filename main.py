@@ -224,16 +224,15 @@ def registration_name(msg):
                             where user_id = ?
                             ''',
                            (msg.text, msg.from_user.id))
-            con.commit()
         bot.send_message(msg.chat.id, 'Все готово.')
     except:
         bot.send_message(msg.chat.id, 'Нипалучилося')
     #bot.register_next_step_handler(msg, registration_img)
 
 
-def registration_start(msg):
+def registration_start(call):
     try:
-        msg = bot.send_message(msg.chat.id, 'Напиши в чат свой игровой ник.')
+        msg = bot.send_message(call.chat.id, 'Напиши в чат свой игровой ник.')
         with sqlite3.connect('mafiaclub_hse.db') as con:
             cursor = con.cursor()
             cursor.execute('INSERT INTO gamers (user_id, nickname) VALUES (?, ?)', (msg.from_user.id, msg.text))
@@ -255,7 +254,6 @@ def change_resume(msg):
                         where user_id = ?
                         ''',
                        (msg.document, msg.from_user.id))
-        con.commit()
     bot.send_message(msg.chat.id, 'Резюме изменено.')
     send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
 
