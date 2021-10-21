@@ -36,6 +36,7 @@ def send_keyboard_add_gamedate(message, text="Привет, чем я могу �
     bot.register_next_step_handler(msg, callback_worker)
 
 
+@bot.message_handler(commands=['change'])
 def send_keyboard_change_profile(message, text="Выбери что хочешь изменить"):
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
     itembtn1 = types.KeyboardButton('Изменить игровой никнейм')
@@ -294,8 +295,8 @@ def info_profile(msg):
         #+ '\n' + info_get_resume(cursor.fetchall())
         #img = info_get_img(cursor.fetchall())
         #bot.send_message(msg.chat.id, img)
-        bot.send_message(msg.chat.id, info, parse_mode='HTML')
-        send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
+    bot.send_message(msg.chat.id, info, parse_mode='HTML')
+    send_keyboard_change_profile(msg, "Хочешь что-нибудь изменить?")
 
 
 # Показать профиль - Конец
