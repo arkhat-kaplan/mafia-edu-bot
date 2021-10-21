@@ -16,7 +16,7 @@ def send_keyboard(message, text="Привет, чем я могу тебе по�
     itembtn2 = types.KeyboardButton('Афиша ближайших игр')
     itembtn3 = types.KeyboardButton('Регистрация нового участника')
     itembtn4 = types.KeyboardButton('Запись на игру')
-    itembtn5 = types.KeyboardButton('Другое')
+    itembtn5 = types.KeyboardButton('Просмотреть профиль')
     itembtn6 = types.KeyboardButton('Нет, спасибо!')
     keyboard.add(itembtn1, itembtn2)
     keyboard.add(itembtn3, itembtn4, itembtn5, itembtn6)
@@ -354,6 +354,8 @@ def callback_worker(call):
         get_info(call)
     if call.text == 'Регистрация нового участника':
         registration_start(call)
+    if call.text == 'Просмотреть профиль':
+        info_profile(call)
     if call.text == 'Изменить игровой никнейм':
         change_nickname(call)
     if call.text == 'Изменить имя в профиле':
